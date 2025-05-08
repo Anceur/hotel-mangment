@@ -1,0 +1,185 @@
+<div class="w-full max-w-7xl">
+  <h2 mat-dialog-title class="text-2xl font-bold text-[#d6bfa9] bg-gray-100 px-8 py-5 rounded-t-lg">
+    Détails du Client
+  </h2>
+
+  <mat-dialog-content *ngIf="client" class="px-8 py-6 max-h-[80vh] overflow-y-auto">
+    <!-- Ligne 1: Informations Personnelles -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-sm mb-8">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">
+        Informations Personnelles
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex flex-col">
+          <span class="text-gray-500 text-sm">Nom</span>
+          <span class="text-gray-900 text-lg font-medium">{{ client.nom }}</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-500 text-sm">Prénom</span>
+          <span class="text-gray-900 text-lg font-medium">{{ client.prenom }}</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-500 text-sm">Statut</span>
+          <span class="text-gray-900 text-lg font-medium">{{ client.statut | titlecase }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ligne 2: Préférences -->
+    <div *ngIf="client.preferences && client.niveauPreferences" class="bg-gray-50 p-6 rounded-lg shadow-sm mb-8">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">
+        Préférences
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
+        <div *ngFor="let key of objectKeys(client.preferences)" class="flex items-center justify-between p-3 bg-white rounded">
+          <span class="font-medium text-gray-700 capitalize">{{ key }}</span>
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-1 rounded text-xs
+                      {{ client.preferences[key] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+              {{ client.preferences[key] ? 'Oui' : 'Non' }}
+            </span>
+            <span class="px-2 py-1 bg-[#d6bfa9] bg-opacity-20 text-[#d6bfa9] text-xs rounded-full">
+              {{ client.niveauPreferences[key] }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Contraintes -->
+    <div *ngIf="client.contraintes" class="bg-gray-50 p-6 rounded-lg shadow-sm mb-8">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">Contraintes</h3>
+      <p class="text-gray-700 text-lg leading-relaxed">{{ client.contraintes }}</p>
+    </div>
+
+    <!-- Section Services -->
+    <div *ngIf="client.services?.length" class="bg-gray-50 p-6 rounded-lg shadow-sm">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-6">Services Utilisés</h3>
+      <div class="space-y-6">
+        <div *ngFor="let service of client.services" class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-[#d6bfa9] bg-opacity-10 px-6 py-4 border-b border-gray-200">
+            <h4 class="font-bold text-[#d6bfa9] text-xl">{{ service.type | titlecase }}</h4>
+          </div>
+
+          <div *ngIf="service.details" class="p-6 grid grid-cols-1 lg:grid-cols-1 gap-6">
+            <!-- Détails généraux -->
+            <div *ngIf="service.details.vue || service.details.lit || service.details.etage !== undefined" class="space-y-3">
+              <h5 class="font-medium text-gray-700 text-lg mb-3">Configuration</h5>
+              <p *ngIf="service.details.vue" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">visibility</span>
+                <span>Vue : {{ service.details.vue }}</span>
+              </p>
+              <p *ngIf="service.details.lit" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">king_bed</span>
+                <span>Lit : {{ service.details.lit }}</span>
+              </p>
+              <p *ngIf="service.details.etage !== undefined" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">stairs</span>
+                <span>Étage : {{ service.details.etage }}</span>
+              </p>
+            </div>
+
+            <!-- Options de service -->
+            <div *ngIf="service.details.petitDejeuner || service.details.serviceChambre" class="space-y-3">
+              <h5 class="font-medium text-gray-700 text-lg mb-3">Services</h5>
+              <p *ngIf="service.details.petitDejeuner" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">free_breakfast</span>
+                <span>Petit Déjeuner : {{ service.details.petitDejeuner }}</span>
+              </p>
+              <p *ngIf="service.details.serviceChambre" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">room_service</span>
+                <span>Service Chambre : {{ service.details.serviceChambre }}</span>
+              </p>
+            </div>
+
+            <!-- Options Spa -->
+            <div *ngIf="service.details.optionsSpa" class="space-y-3">
+              <h5 class="font-medium text-gray-700 text-lg mb-3">Options Spa</h5>
+              <ul class="space-y-2">
+                <li *ngIf="service.details.optionsSpa.massage" class="flex items-center text-lg">
+                  <span class="material-icons text-gray-500 mr-3">spa</span>
+                  <span>Massage</span>
+                </li>
+                <li *ngIf="service.details.optionsSpa.jacuzzi" class="flex items-center text-lg">
+                  <span class="material-icons text-gray-500 mr-3">hot_tub</span>
+                  <span>Jacuzzi</span>
+                </li>
+                <li *ngIf="service.details.optionsSpa.sauna" class="flex items-center text-lg">
+                  <span class="material-icons text-gray-500 mr-3">thermostat</span>
+                  <span>Sauna</span>
+                </li>
+                <li *ngIf="service.details.optionsSpa.hammam" class="flex items-center text-lg">
+                  <span class="material-icons text-gray-500 mr-3">waves</span>
+                  <span>Hammam</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Autres options -->
+            <div class="space-y-3">
+              <div *ngIf="service.details.coachDisponible !== undefined" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">fitness_center</span>
+                <span>Coach disponible : {{ service.details.coachDisponible ? 'Oui' : 'Non' }}</span>
+              </div>
+              <div *ngIf="service.details.debit" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">wifi</span>
+                <span>Débit Wifi : {{ service.details.debit }}</span>
+              </div>
+              <div *ngIf="service.details.piscineType" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">pool</span>
+                <span>Piscine : {{ service.details.piscineType }}</span>
+                <span *ngIf="service.details.temperature" class="ml-3 text-gray-500">
+                  ({{ service.details.temperature }}°C)
+                </span>
+              </div>
+            </div>
+
+            <!-- Transport -->
+            <div *ngIf="service.details.vehicule || service.details.destination" class="space-y-3">
+              <h5 class="font-medium text-gray-700 text-lg mb-3">Transport</h5>
+              <p *ngIf="service.details.vehicule" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">directions_car</span>
+                <span>Véhicule : {{ service.details.vehicule }}</span>
+              </p>
+              <p *ngIf="service.details.destination" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">place</span>
+                <span>Destination : {{ service.details.destination }}</span>
+              </p>
+            </div>
+
+            <!-- Restauration -->
+            <div *ngIf="service.details.typeRestauration || service.details.horaires" class="space-y-3">
+              <h5 class="font-medium text-gray-700 text-lg mb-3">Restauration</h5>
+              <p *ngIf="service.details.typeRestauration" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">restaurant</span>
+                <span>Type : {{ service.details.typeRestauration }}</span>
+              </p>
+              <p *ngIf="service.details.horaires" class="flex items-center text-lg">
+                <span class="material-icons text-gray-500 mr-3">schedule</span>
+                <span>Horaires : {{ service.details.horaires }}</span>
+              </p>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- Section Recommandations -->
+<div *ngIf="client.recommendations?.length" class="bg-gray-50 p-6 rounded-lg shadow-sm mb-8">
+  <h3 class="text-2xl font-semibold text-gray-800 mb-6">Recommandations</h3>
+  <div class="space-y-4">
+    <div *ngFor="let recommandation of client.recommendations" class="border border-gray-200 rounded-lg p-4">
+      <p class="text-gray-700 text-lg">{{ recommandation.description }}</p>
+    </div>
+  </div>
+</div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="px-8 py-5 bg-gray-50 rounded-b-lg">
+    <button mat-button mat-dialog-close class="text-gray-600 hover:bg-gray-200 px-6 py-3 rounded text-lg">
+      Fermer
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,446 @@
+<!-- Header (inchangé) -->
+<header
+  class="fixed top-0 left-0 right-0 flex items-center justify-between px-8 py-6 text-white z-50 transition-all duration-300 bg-black shadow-md"
+>
+  <div class="flex items-center space-x-2">
+    <div class="text-sm font-light uppercase">  <a  (click)="navigateTo('home')">Luxury Hotel</a></div>
+  </div>
+
+  <!-- Hamburger Menu for Mobile -->
+  <div class="md:hidden flex items-center space-x-4 pr-0">
+    <button (click)="toggleMenu()" class="text-white">
+      <span class="material-icons text-3xl">menu</span>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="space-x-6 hidden md:flex">
+    <a  (click)="navigateTo('home')" class="hover:underline">Home</a>
+    <a (click)="scrollTo('about', $event)" class="hover:underline">About</a>
+    <a  (click)="navigateTo('services')" class="hover:underline">Rooms</a>
+    <a (click)="navigateTo('clients')" class="hover:underline">Clients</a>
+    <a  (click)="navigateTo('services')" class="hover:underline">Services</a>
+    <a  (click)="scrollTo('contact', $event)"class="hover:underline">Contact</a>
+  </nav>
+</header>
+<!-- Mobile Menu -->
+<div *ngIf="isMenuOpen" class="md:hidden absolute top-20 left-0 right-0 bg-black text-white px-6 py-4 z-50">
+  <div class="flex flex-col items-center space-y-4">
+    <a  (click)="handleMobileClick('home')" class="hover:underline">Home</a>
+    <a (click)="handleMobileClick('about', $event)" class="hover:underline">About</a>
+    <a (click)="handleMobileClick('services')" class="hover:underline">Rooms</a>
+    <a (click)="handleMobileClick('clients')" class="hover:underline">Clients</a>
+    <a (click)="handleMobileClick('services')" class="hover:underline">Services</a>
+    <a  (click)="handleMobileClick('contact', $event)" class="hover:underline">Contact</a>
+  </div>
+</div>
+<!-- Form Container -->
+<div class="pt-28 min-h-screen bg-[#f9f7f4] px-4 pb-20"> <!-- Ajout de pb-20 pour l'espacement du bas -->
+  <div class="max-w-3xl mx-auto p-6 md:p-8 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800 text-center">
+      Ajouter un nouveau client
+    </h2>
+
+    <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <!-- Nom -->
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">Nom</label>
+        <input type="text" formControlName="nom"
+          class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+
+      <!-- Prénom -->
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">Prénom</label>
+        <input type="text" formControlName="prenom"
+          class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+
+      <!-- Statut -->
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">Statut du client</label>
+        <select formControlName="statut"
+          class="w-full border border-gray-300 rounded-md p-3 bg-white">
+          <option value="" disabled selected>Choisir un statut</option>
+          <option value="standard">Standard</option>
+          <option value="gold">Gold</option>
+          <option value="platinum">Platinum</option>
+        </select>
+      </div>
+
+      <!-- Préférences -->
+      <div class="space-y-4">
+        <div *ngFor="let pref of preferences"
+             class="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-2 md:gap-4">
+          <label class="md:w-1/3 text-gray-700 font-medium">{{ pref.label }}</label>
+
+          <input type="checkbox" [formControl]="getFormControl(preferencesGroup, pref.key)" class="md:ml-auto" />
+
+          <select [formControl]="getFormControl(preferencesNiveauGroup, pref.key)"
+                  class="w-full md:w-1/2 border border-gray-300 rounded-md p-2 bg-white">
+            <option value="faible">Faible</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="élevée">Élevée</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Contraintes -->
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">Contraintes</label>
+        <textarea formControlName="contraintes" rows="4"
+                  class="w-full border border-gray-300 rounded-md p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      </div>
+
+      <!-- Services -->
+      <div class="space-y-4">
+        <label class="block mb-1 text-gray-700 font-medium">Services</label>
+
+        <div formArrayName="services" *ngFor="let service of services.controls; let i = index" class="mb-6">
+          <div [formGroupName]="i" class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+            <!-- En-tête du service -->
+            <div class="flex items-center justify-between bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <select formControlName="type" class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9] text-gray-700">
+                <option value="" disabled selected>Sélectionnez un service</option>
+                <option value="chambre">Chambre</option>
+                <option value="restauration">Restauration</option>
+                <option value="spa">Spa</option>
+                <option value="sport">Salle de sport</option>
+                <option value="wifi">Wi-Fi</option>
+                <option value="conciergerie">Conciergerie</option>
+                <option value="transport">Transport</option>
+                <option value="blanchisserie">Blanchisserie</option>
+                <option value="piscine">Piscine</option>
+              </select>
+
+              <button type="button" (click)="removeService(i)"
+                      class="ml-4 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+
+            <!-- Détails du service -->
+            <div formGroupName="details" class="p-4 space-y-4" *ngIf="service.get('type')?.value">
+              <ng-container [ngSwitch]="service.get('type')?.value">
+
+                <!-- Chambre -->
+                <ng-container *ngSwitchCase="'chambre'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Étage</label>
+                      <input formControlName="etage" type="number"
+                             class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Vue</label>
+                      <select formControlName="vue" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez une vue</option>
+                        <option value="mer">Mer</option>
+                        <option value="ville">Ville</option>
+                        <option value="jardin">Jardin</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Type de lit</label>
+                      <select formControlName="lit" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez un lit</option>
+                        <option value="simple">Simple</option>
+                        <option value="double">Double</option>
+                        <option value="queen">Queen</option>
+                        <option value="king">King</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Petit déjeuner</label>
+                      <select formControlName="petitDejeuner" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Option petit déjeuner</option>
+                        <option value="inclus">Inclus</option>
+                        <option value="supplement">Supplément</option>
+                        <option value="non">Non</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Service chambre</label>
+                      <select formControlName="serviceChambre" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Fréquence service</option>
+                        <option value="matin">Matin</option>
+                        <option value="soir">Soir</option>
+                        <option value="24h">24h/24</option>
+                      </select>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Restauration -->
+                <ng-container *ngSwitchCase="'restauration'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Type de restauration</label>
+                      <select formControlName="typeRestauration" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez un type</option>
+                        <option value="buffet">Buffet</option>
+                        <option value="carte">À la carte</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Horaires</label>
+                      <input formControlName="horaires" type="text" placeholder="Ex: 7h-10h, 12h-14h, 19h-22h"
+                             class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Spa -->
+                <ng-container *ngSwitchCase="'spa'">
+                  <div class="space-y-3">
+                    <h4 class="text-sm font-medium text-gray-700">Options Spa</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <label class="inline-flex items-center">
+                        <input type="checkbox" formControlName="massage" class="h-4 w-4 text-[#d6bfa9] focus:ring-[#d6bfa9] border-gray-300 rounded">
+                        <span class="ml-2 text-gray-700">Massage</span>
+                      </label>
+                      <label class="inline-flex items-center">
+                        <input type="checkbox" formControlName="jacuzzi" class="h-4 w-4 text-[#d6bfa9] focus:ring-[#d6bfa9] border-gray-300 rounded">
+                        <span class="ml-2 text-gray-700">Jacuzzi</span>
+                      </label>
+                      <label class="inline-flex items-center">
+                        <input type="checkbox" formControlName="sauna" class="h-4 w-4 text-[#d6bfa9] focus:ring-[#d6bfa9] border-gray-300 rounded">
+                        <span class="ml-2 text-gray-700">Sauna</span>
+                      </label>
+                      <label class="inline-flex items-center">
+                        <input type="checkbox" formControlName="hammam" class="h-4 w-4 text-[#d6bfa9] focus:ring-[#d6bfa9] border-gray-300 rounded">
+                        <span class="ml-2 text-gray-700">Hammam</span>
+                      </label>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Salle de sport -->
+                <ng-container *ngSwitchCase="'sport'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Coach disponible</label>
+                      <select formControlName="coachDisponible" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez une option</option>
+                        <option [ngValue]="true">Oui</option>
+                        <option [ngValue]="false">Non</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Équipements</label>
+                      <input formControlName="equipements" type="text" placeholder="Ex: Poids libres, tapis, machines..."
+                             class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Wi-Fi -->
+                <ng-container *ngSwitchCase="'wifi'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Débit</label>
+                      <select formControlName="debit" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez un débit</option>
+                        <option value="haut">Haut débit</option>
+                        <option value="normal">Débit normal</option>
+                      </select>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Conciergerie -->
+                <ng-container *ngSwitchCase="'conciergerie'">
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Demandes spéciales</label>
+                      <textarea formControlName="demandes" rows="3"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]"
+                                placeholder="Décrivez vos demandes..."></textarea>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Transport -->
+                <ng-container *ngSwitchCase="'transport'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Véhicule</label>
+                      <select formControlName="vehicule" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez un véhicule</option>
+                        <option value="voiture">Voiture</option>
+                        <option value="minibus">Minibus</option>
+                        <option value="limousine">Limousine</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                      <input formControlName="destination" type="text" placeholder="Ex: Aéroport, Centre-ville..."
+                             class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Blanchisserie -->
+                <ng-container *ngSwitchCase="'blanchisserie'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Type de service</label>
+                      <select formControlName="typeBlanchisserie" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez un service</option>
+                        <option value="nettoyage">Nettoyage simple</option>
+                        <option value="repassage">Repassage</option>
+                        <option value="express">Service express</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Date de retour</label>
+                      <input formControlName="dateRetour" type="date"
+                             class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- Piscine -->
+                <ng-container *ngSwitchCase="'piscine'">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Type de piscine</label>
+                      <select formControlName="piscineType" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez un type</option>
+                        <option value="ouverte">Ouverte</option>
+                        <option value="couverte">Couverte</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Température</label>
+                      <select formControlName="temperature" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#d6bfa9] focus:border-[#d6bfa9]">
+                        <option value="" disabled selected>Sélectionnez une option</option>
+                        <option value="chauffée">Chauffée</option>
+                        <option value="ambiante">Ambiante</option>
+                      </select>
+                    </div>
+                  </div>
+                </ng-container>
+
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" (click)="addService()"
+        class="px-6 py-3 bg-[#d6bfa9] text-white transition-all duration-300 text-sm uppercase font-medium tracking-wider hover:bg-[#b7a080] hover:scale-105">
+  <span class="text-white text-xl">+</span> Ajouter un service
+</button>
+
+      </div>
+
+      <!-- Submit -->
+      <div class="text-right">
+        <button type="submit"
+                [disabled]="clientForm.invalid"
+                class="px-6 py-3 border-2 border-[#d6bfa9] text-[#d6bfa9] hover:bg-[#d6bfa9] hover:text-white transition-all duration-300 text-sm uppercase font-medium tracking-wider">
+          Générer offre personnalisée
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer id="footer-section">
+  <!-- Partie 1 : Bannière avec image et message -->
+  <div class="relative h-96 w-full">
+    <!-- Image de fond avec overlay noir semi-transparent -->
+    <div class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center">
+      <div class="text-center px-4 mb-8">  <!-- Ajout de mb-8 pour l'espacement -->
+        <p class="text-lg text-white max-w-4xl mx-auto font-light">
+          Découvrez un havre de paix où luxe et élégance se rencontrent pour créer des souvenirs inoubliables
+        </p>
+      </div>
+      <div class="text-center px-4">
+        <h2 class="text-4xl font-serif text-white font-bold ">Votre Échappée Belle Commence Ici</h2>
+      </div>
+    </div>
+    <!-- Remplacez par votre image réelle -->
+    <img src="assets/images/footer-picture.jpg" alt="Royella Luxury Hotel" class="w-full h-full object-cover">
+  </div>
+
+  <!-- Partie 2 : Footer noir avec informations -->
+  <div class="bg-black text-white py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Titre centré -->
+      <h3 class="text-xl md:text-2xl font-serif text-center mb-12 ">LUXURY HOTEL</h3>
+
+      <!-- Infos de contact en ligne -->
+      <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">
+        <!-- Téléphone -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </div>
+          <p class="text-gray-300 text-lg">(+088) 210 - 123 - 4567</p>
+        </div>
+
+        <!-- Email -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <p class="text-gray-300 text-lg">info&#64;luxury-hotel.com</p>
+        </div>
+
+        <!-- Adresse -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p class="text-gray-300 text-lg">79 alger, Algeria</p>
+        </div>
+      </div>
+
+      <!-- Copyright et réseaux sociaux -->
+      <div class="border-t border-gray-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-400 text-lg mb-4 md:mb-0">Copyright © 2025 lexury hotel. Tous droits réservés.</p>
+
+        <div class="flex gap-4">
+          <!-- Facebook -->
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+            </svg>
+          </a>
+
+          <!-- Instagram -->
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+
+          <!-- Twitter -->
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
